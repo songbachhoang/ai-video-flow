@@ -1,0 +1,2 @@
+timestamp,campaign,sku,shot_id,shot_name,job_id,model,reroll_count,identity_hold,garment_fidelity,motion_plausibility,prompt_adherence,channel_fitness,verdict,credits,notes
+2026-06-08T00:00:00Z,EXAMPLE,england-kit-hero,5,product-hero,00000000-0000-0000-0000-000000000000,seedance_2_0,0,5,5,4,5,5,pass,0,"example row — replace with real generations; verdict ∈ {pass,soft-fail,hard-fail}"

@@ -1,0 +1,2 @@
+campaign,sku,date,shots_planned,generations_total,usable,yield_rate,credits_spent,cost_per_usable_usd,turnaround_min,notes
+EXAMPLE,england-kit-hero,2026-06-08,5,0,0,,0,,,"example row — populate after first real campaign; yield_rate = usable/generations_total"
