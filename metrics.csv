@@ -1,2 +1,4 @@
 campaign,sku,date,shots_planned,generations_total,usable,yield_rate,credits_spent,cost_per_usable_usd,turnaround_min,notes
-EXAMPLE,england-kit-hero,2026-06-08,5,0,0,,0,,,"example row — populate after first real campaign; yield_rate = usable/generations_total"
+england-detail-test,england-home-shirt,2026-06-08,1,1,1,1.0,28,2.10,4,"Seedance 2.0 Fast 8s 720p 9:16, no re-roll. Real cost 28cr=$2.10 on Starter (plan est $0.45-0.55 was ~4x low). Garment fine-detail soft — see qa-log"
+england-detail-test-v2,england-home-shirt,2026-06-08,2,2,2,1.0,56,2.10,3,"2-angle scripted cut (wide->close), background fixed via grounded golden-hour prompt; assembled 10s via ffmpeg -> output/england_hero_cut.mp4"
+england-story,england-home-shirt,2026-06-08,4,4,4,1.0,112,2.10,12,"scripted 4-shot voiced narrative (ritual->departure->city->hero), Daniel UK TTS VO + diegetic ambient bed + endcard, 21.5s -> output/england_story.mp4. First-try 4/4, no re-roll (Starter budget). Music to be added at publish (rights)"

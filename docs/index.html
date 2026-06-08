@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owning an AI Video Flow — 2 hours, end to end</title>
+<meta name="description" content="What I learned building a repeatable AI video production system in two hours: prompting, unit economics, credit ops, identity, scripting, voice, process, and the virality test.">
+<style>
+  :root{
+    --bg:#0a0d13; --surface:#121826; --surface2:#0f1521; --line:#222c3f;
+    --ink:#eef1f7; --mut:#98a2b6; --faint:#6b7588;
+    --red:#e8233f; --gold:#d8b15a; --blue:#5b8cff; --green:#43d18b;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3{line-height:1.15;letter-spacing:-0.02em;margin:0}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;background:rgba(10,13,19,.82);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:20px;height:56px}
+  nav .brand{font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+  nav .brand b{color:var(--red)}
+  nav .links{margin-left:auto;display:flex;gap:18px;flex-wrap:wrap}
+  nav .links a{color:var(--mut);font-size:14px;font-weight:600}
+  nav .links a:hover{color:var(--ink);text-decoration:none}
+  @media(max-width:720px){nav .links{display:none}}
+
+  /* hero */
+  header{padding:72px 0 36px;border-bottom:1px solid var(--line);
+    background:radial-gradient(900px 380px at 80% -10%,rgba(232,35,63,.14),transparent 60%);}
+  .kicker{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--gold);border:1px solid var(--line);
+    padding:5px 11px;border-radius:999px;margin-bottom:20px}
+  header h1{font-size:clamp(32px,5.4vw,54px);font-weight:850}
+  header h1 .acc{color:var(--red)}
+  .lede{font-size:clamp(17px,2.2vw,20px);color:var(--mut);max-width:760px;margin:18px 0 0}
+  .thesis{margin:26px 0 0;padding:16px 20px;border-left:3px solid var(--gold);
+    background:var(--surface);border-radius:0 10px 10px 0;font-size:16.5px;color:#dfe4ee}
+  .meta-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+  .tag{font-size:12.5px;color:var(--mut);background:var(--surface);border:1px solid var(--line);
+    padding:6px 12px;border-radius:999px}
+
+  /* hero grid w/ video */
+  .herogrid{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center;margin-top:40px}
+  @media(max-width:820px){.herogrid{grid-template-columns:1fr}}
+  .videocard{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:12px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .videocard video{width:100%;border-radius:9px;display:block;background:#000;aspect-ratio:9/16;object-fit:cover}
+  .videocard .cap{font-size:12.5px;color:var(--faint);padding:9px 6px 3px}
+
+  /* stat strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:46px 0}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .stat .n{font-size:27px;font-weight:850;letter-spacing:-.02em}
+  .stat .n.red{color:var(--red)} .stat .n.gold{color:var(--gold)} .stat .n.green{color:var(--green)}
+  .stat .l{font-size:13px;color:var(--mut);margin-top:3px}
+
+  section{padding:54px 0;border-top:1px solid var(--line)}
+  .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+  section h2{font-size:clamp(24px,3.4vw,34px);font-weight:820;margin:10px 0 8px}
+  section .sub{color:var(--mut);max-width:740px;margin:0 0 26px}
+
+  /* competency cards */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;
+    transition:border-color .2s,transform .2s}
+  .card:hover{border-color:#34425e;transform:translateY(-2px)}
+  .card .ix{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .card .ix .num{font-size:12px;font-weight:800;color:var(--bg);background:var(--gold);
+    width:24px;height:24px;border-radius:7px;display:grid;place-items:center}
+  .card h3{font-size:18px;font-weight:780}
+  .card p{margin:8px 0 0;font-size:14.6px;color:var(--mut)}
+  .card .take{margin-top:12px;font-size:13.5px;color:#cdd4e2;border-top:1px dashed var(--line);padding-top:11px}
+  .card .take b{color:var(--ink)}
+  .card code{background:var(--surface2);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;font-size:12.5px;color:#e7c98a}
+
+  /* before/after */
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.ba{grid-template-columns:1fr}}
+  .shot{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .shot img{width:100%;display:block;aspect-ratio:3/4;object-fit:cover}
+  .shot .b{padding:12px 14px}
+  .shot .b .t{font-weight:750;font-size:14.5px}
+  .shot.bad .t{color:#ff8a98} .shot.good .t{color:var(--green)}
+  .shot .b p{margin:3px 0 0;font-size:13px;color:var(--mut)}
+
+  /* pipeline */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:13.5px;font-weight:650}
+  .arr{color:var(--faint);font-weight:800}
+  .gate{border-color:var(--red);color:#ffd2d8}
+
+  /* codeblock */
+  pre{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:18px;
+    overflow:auto;font-size:13px;color:#c9d2e3;line-height:1.7}
+  pre .c{color:var(--faint)} pre .k{color:var(--gold)} pre .s{color:var(--green)}
+
+  /* story beats */
+  .beats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:720px){.beats{grid-template-columns:repeat(2,1fr)}}
+  .beat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .beat .n{font-size:12px;color:var(--gold);font-weight:800;letter-spacing:.1em}
+  .beat .t{font-weight:750;margin-top:4px}
+  .beat .vo{margin-top:9px;font-size:13px;color:var(--mut);font-style:italic}
+
+  .imgrow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+  @media(max-width:640px){.imgrow{grid-template-columns:1fr}}
+  .imgrow img{width:100%;border-radius:12px;border:1px solid var(--line);display:block;aspect-ratio:3/4;object-fit:cover}
+
+  /* honest box */
+  .honest{background:linear-gradient(180deg,rgba(232,35,63,.06),transparent);
+    border:1px solid var(--line);border-radius:14px;padding:22px}
+  .honest ul{margin:10px 0 0;padding-left:18px;color:var(--mut);font-size:14.5px}
+  .honest li{margin:6px 0}
+
+  footer{padding:48px 0 70px;border-top:1px solid var(--line);color:var(--faint);font-size:13.5px}
+  footer b{color:var(--mut)}
+  .pill{color:var(--mut)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <div class="brand">ai-video<b>·</b>flow</div>
+  <div class="links">
+    <a href="#video">The film</a>
+    <a href="#learn">What I learned</a>
+    <a href="#numbers">Numbers</a>
+    <a href="#realism">Realism</a>
+    <a href="#process">The system</a>
+    <a href="#viral">Virality</a>
+  </div>
+</div></nav>
+
+<header><div class="wrap">
+  <span class="kicker">Field notes · ~2 hours, end to end</span>
+  <h1>Owning an AI video flow,<br><span class="acc">not just making a clip.</span></h1>
+  <p class="lede">A two-hour run building a <b>repeatable</b> product-video system on Higgsfield + Seedance 2.0 — and everything the job actually requires that you only learn by doing: prompting, unit economics, credit ops, identity, scripting, voice, process, and the virality test.</p>
+  <div class="thesis">“You don't want someone who can make one good video. You want a flow that makes the 400th product video as cheap and on-brand as the first.”</div>
+  <div class="meta-row">
+    <span class="tag">Higgsfield MCP</span>
+    <span class="tag">Seedance 2.0 (Fast)</span>
+    <span class="tag">Claude Code</span>
+    <span class="tag">ffmpeg · TTS</span>
+    <span class="tag">Original character + real kit</span>
+  </div>
+
+  <div class="herogrid" id="video">
+    <div>
+      <h2 style="font-size:26px">From “pretty b-roll” to a story that sells</h2>
+      <p style="color:var(--mut);margin:12px 0 0">First pass was a model standing at a stadium — technically on-brand, emotionally dead. The lesson that mattered most: <b>an ad needs a story and a voice.</b> This is the rebuild — a 4-shot scripted, voiced narrative, one consistent original character, the real England kit, assembled and graded as a system.</p>
+      <div class="stats" style="margin:24px 0 0;grid-template-columns:repeat(2,1fr)">
+        <div class="stat"><div class="n green">100%</div><div class="l">yield — 4/4 shots first try</div></div>
+        <div class="stat"><div class="n gold">$2.10</div><div class="l">real cost per clip (measured)</div></div>
+      </div>
+    </div>
+    <div class="videocard">
+      <video controls playsinline preload="metadata" poster="media/hero.jpg">
+        <source src="media/story.mp4" type="video/mp4">
+      </video>
+      <div class="cap">“Wear It Like You Mean It” — 21s, 9:16, voiced. ▶ sound on.</div>
+    </div>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <div class="stats" id="numbers">
+    <div class="stat"><div class="n">28 cr</div><div class="l">Seedance Fast, 8s, 720p = <b>$2.10</b></div></div>
+    <div class="stat"><div class="n red">~4×</div><div class="l">my first cost estimate was too low</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">re-rolls needed on the final cut</div></div>
+    <div class="stat"><div class="n green">$8.40</div><div class="l">total media cost of the finished ad</div></div>
+  </div>
+</div>
+
+<section id="learn"><div class="wrap">
+  <span class="eyebrow">What the job required</span>
+  <h2>Nine things you only learn by shipping</h2>
+  <p class="sub">Each of these is a competency the role names. Here's what I hit, and the concrete takeaway.</p>
+  <div class="grid">
+
+    <div class="card">
+      <div class="ix"><span class="num">1</span><h3>Prompting</h3></div>
+      <p>A two-line grammar: a plain-English intent line, then an ordered tag line — <code>shot → subject → motion → camera → light → DOF → style → res</code>. Front-loading shot type + subject stops the model drifting.</p>
+      <p class="take"><b>Takeaway:</b> realism is a <b>prompt skill</b>. “cinematic / dusk / 8k / bokeh” reads fake; “documentary, natural golden-hour light, real architecture, 35mm, film grain, no bloom” fixed it.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">2</span><h3>Cost &amp; unit economics</h3></div>
+      <p>Preflighted real cost before spending (<code>get_cost</code>): one 8s Fast clip = <b>28 credits = $2.10</b>. My plan's estimate ($0.45–0.55) was off by ~4–5×.</p>
+      <p class="take"><b>Takeaway:</b> quote <b>cost-per-usable and yield</b>, never vibes. Measure, then the budget cap (3 re-rolls/shot) becomes a real stop-loss, not a slogan.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">3</span><h3>Credit ops</h3></div>
+      <p>Tiers gate the model: Starter = <b>Fast only, 720p, 2 concurrent jobs</b>; Plus unlocks <code>std</code> + 1080p + 6 concurrent. Credits don't roll over; no à-la-carte packs.</p>
+      <p class="take"><b>Takeaway:</b> the billing API even <b>hid the Starter tier</b> — verify pricing against the real UI. Tooling can mislead; concurrency limits shape your batch strategy.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">4</span><h3>Identity &amp; consistency</h3></div>
+      <p>One <b>original character</b>, reused across every shot = the catalog anchor. Learned the trap: a trained “Soul” only drives Soul models — for Seedance you use reference <b>Elements</b> / image refs.</p>
+      <p class="take"><b>Takeaway:</b> consistency is won in the <b>reference pack</b>, not the prompt. Same face + same kit across 4 shots, zero drift.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">5</span><h3>Script &amp; story</h3></div>
+      <p>B-roll ≠ an ad. Wrote a 4-beat arc — <b>ritual → departure → the city gathers → pride</b> — in sport-brand register, each VO line mapped to a beat.</p>
+      <p class="take"><b>Takeaway:</b> the “<b>city gathers</b>” beat is the emotional engine. Story is what makes a viewer believe, and share.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">6</span><h3>Voice</h3></div>
+      <p>Voiceover <b>narration</b> (not on-camera dialogue) sidesteps lip-sync. Cut a UK-voice VO for timing and emotion.</p>
+      <p class="take"><b>Takeaway:</b> demo with free TTS; for final, swap a <b>premium voice or human</b> — the voice is half the believability.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">7</span><h3>Process / the system</h3></div>
+      <p>An 8-stage pipeline with one QA gate (5-dimension rubric) + a decision tree, all version-controlled: <code>pipeline.md</code>, <code>prompts.md</code>, <code>qa-log.csv</code>, and a one-command <code>/make-campaign</code>.</p>
+      <p class="take"><b>Takeaway:</b> <b>UI for taste, code for scale.</b> Winning prompts/refs get promoted to a template library — the loop compounds.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">8</span><h3>The virality test</h3></div>
+      <p>Ran a virality predictor and, more usefully, diagnosed <b>why</b>: open on the face in the first 0.5s, earn retention with a payoff beat, and a fake-looking background caps shares.</p>
+      <p class="take"><b>Takeaway:</b> “viral” is engineered — <b>hook + payoff + perceived quality + native audio</b>, not luck.</p>
+    </div>
+
+    <div class="card">
+      <div class="ix"><span class="num">9</span><h3>Responsible ownership</h3></div>
+      <p>Declined to generate a <b>real celebrity's likeness</b> — even on request — on rights/consent grounds. Original characters only; branding handled deliberately; never auto-publish to a live channel.</p>
+      <p class="take"><b>Takeaway:</b> owning the pipeline means owning the <b>guardrails</b>. That's a feature you can show, not a limitation.</p>
+    </div>
+
+  </div>
+</div></section>
+
+<section id="realism"><div class="wrap">
+  <span class="eyebrow">The single biggest craft lesson</span>
+  <h2>“The background looks fake” — and the prompt fix</h2>
+  <p class="sub">Same model, same kit. The only change was the prompt: trading stylized-cinematic cues for grounded documentary ones. That one move is the difference between “obviously AI” and “could be a real shoot.”</p>
+  <div class="ba">
+    <div class="shot bad">
+      <img src="media/bg_before.jpg" alt="Before: stylized dusk stadium, reads fake">
+      <div class="b"><div class="t">✗ Before — “cinematic, dusk, bokeh”</div>
+      <p>Floodlight bloom + blurred crowd = the tell-tale CG look. Low share-intent.</p></div>
+    </div>
+    <div class="shot good">
+      <img src="media/bg_after.jpg" alt="After: real stadium, golden hour, grounded">
+      <div class="b"><div class="t">✓ After — “documentary, golden hour, real architecture”</div>
+      <p>Real concrete-and-steel facade, natural light, real passers-by. Reads like a photograph.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="process"><div class="wrap">
+  <span class="eyebrow">The system, not the clip</span>
+  <h2>One flow, eight stages, one quality gate</h2>
+  <p class="sub">The deliverable is a repeatable pipeline anyone could re-run for the next SKU — “run a campaign for X” is one command.</p>
+  <div class="flow">
+    <span class="step">1 Brief</span><span class="arr">→</span>
+    <span class="step">2 Reference pack</span><span class="arr">→</span>
+    <span class="step">3 Shot list</span><span class="arr">→</span>
+    <span class="step">4 Generate</span><span class="arr">→</span>
+    <span class="step gate">5 QA gate</span><span class="arr">→</span>
+    <span class="step">6 Assemble</span><span class="arr">→</span>
+    <span class="step gate">7 Human publish</span><span class="arr">→</span>
+    <span class="step">8 Measure ↺</span>
+  </div>
+
+  <h3 style="margin:34px 0 10px;font-size:18px;color:var(--mut)">The reusable prompt grammar</h3>
+  <pre><span class="c"># two lines per shot — intent, then an ordered control vector</span>
+<span class="k">intent:</span> <span class="s">"the city falls into step with her — rising matchday energy"</span>
+<span class="k">tags :</span>  tracking shot <span class="c">→</span> subject + kit detail <span class="c">→</span> micro-motion
+        <span class="c">→</span> camera move <span class="c">→</span> light/tone <span class="c">→</span> depth of field
+        <span class="c">→</span> style <span class="c">→</span> resolution</pre>
+
+  <h3 style="margin:34px 0 12px;font-size:18px;color:var(--mut)">The story, in four beats</h3>
+  <div class="beats">
+    <div class="beat"><div class="n">BEAT 1</div><div class="t">The ritual</div><div class="vo">“Some shirts you wear. This one — you carry.”</div></div>
+    <div class="beat"><div class="n">BEAT 2</div><div class="t">The departure</div><div class="vo">“A hundred years of so-close. And still — we believe.”</div></div>
+    <div class="beat"><div class="n">BEAT 3</div><div class="t">The city gathers</div><div class="vo">“You don't pull it on for ninety minutes.”</div></div>
+    <div class="beat"><div class="n">BEAT 4</div><div class="t">The pride</div><div class="vo">“…for everyone beside you. This is England.”</div></div>
+  </div>
+  <div class="imgrow">
+    <img src="media/city.jpg" alt="The city gathers — fans in kit fall into step">
+    <img src="media/hero.jpg" alt="Hero close — proud, crest sharp, end card">
+  </div>
+</div></section>
+
+<section id="viral"><div class="wrap">
+  <span class="eyebrow">Reading the result honestly</span>
+  <h2>What I'd fix before betting on it going viral</h2>
+  <p class="sub">A workflow owner ships <em>and</em> grades their own output. Here's the honest gap between “good demo” and “believable ad.”</p>
+  <div class="honest">
+    <ul>
+      <li><b>Voice:</b> the demo VO is text-to-speech — serviceable, but a premium/human read would lift believability the most.</li>
+      <li><b>Music:</b> no score yet; a swelling bed does half the emotional work — added at publish with licensed/native-trending audio.</li>
+      <li><b>Resolution:</b> 720p Fast is the quality + fine-garment-detail ceiling; <code>std</code>/1080p would sharpen the kit's micro-pattern.</li>
+      <li><b>Hook:</b> for short-form, recut to open on the face in frame one and time the cuts to the track's beat.</li>
+    </ul>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <p><b>ai-video-flow</b> — a production system that happens to output a clip. Built in ~2 hours with Claude Code, the Higgsfield MCP, and Seedance 2.0.</p>
+  <p class="pill">Original character (synthetic, no real-person likeness) · England kit shown for a model-capability test · this page is a personal learning writeup, not a commercial endorsement.</p>
+</div></footer>
+
+</body>
+</html>
