@@ -3,298 +3,190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How I'd own an AI video function</title>
-<meta name="description" content="My operating thesis for owning an AI video production function: how I approach the work, how I'd build the flow, and the long-term play — with a two-hour build as proof.">
+<title>How I'd run Crossian's video engine — Bach Hoang</title>
+<meta name="description" content="A note on the role: what the job actually is, what I'd do in the first 90 days, and the long game. Built a working version in an afternoon — proof at the bottom.">
 <style>
   :root{
-    --bg:#0a0d13; --surface:#121826; --surface2:#0f1521; --line:#222c3f;
-    --ink:#eef1f7; --mut:#98a2b6; --faint:#6b7588;
-    --red:#e8233f; --gold:#d8b15a; --blue:#5b8cff; --green:#43d18b;
-    --maxw:1080px;
+    --paper:#faf8f3; --ink:#191714; --soft:#56514a; --faint:#8a847a;
+    --rule:#e4ded2; --red:#a8132b; --card:#fffdf8;
+    --read:720px;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
-    line-height:1.62;-webkit-font-smoothing:antialiased}
-  a{color:var(--blue);text-decoration:none}
-  a:hover{text-decoration:underline}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
-  h1,h2,h3{line-height:1.14;letter-spacing:-0.02em;margin:0}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Iowan Old Style","Charter","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    font-size:19px;line-height:1.78;-webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:100%}
+  .wrap{max-width:var(--read);margin:0 auto;padding:0 24px}
+  a{color:var(--red);text-underline-offset:2px}
+  h1,h2{font-weight:600;letter-spacing:-0.01em;line-height:1.12;margin:0}
+  p{margin:0 0 22px}
+  em{font-style:italic}
 
-  nav{position:sticky;top:0;z-index:50;background:rgba(10,13,19,.82);
-    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex;align-items:center;gap:20px;height:56px}
-  nav .brand{font-weight:800;letter-spacing:-.02em;color:var(--ink)}
-  nav .brand b{color:var(--red)}
-  nav .links{margin-left:auto;display:flex;gap:18px;flex-wrap:wrap}
-  nav .links a{color:var(--mut);font-size:14px;font-weight:600}
-  nav .links a:hover{color:var(--ink);text-decoration:none}
-  @media(max-width:760px){nav .links{display:none}}
+  header{padding:78px 0 30px}
+  .label{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:12px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--red);margin-bottom:24px}
+  h1{font-size:clamp(34px,6vw,52px);letter-spacing:-0.02em}
+  .dek{font-size:clamp(19px,2.4vw,23px);color:var(--soft);font-style:italic;margin:22px 0 0;line-height:1.5}
+  .byline{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:14px;color:var(--faint);margin-top:26px;letter-spacing:.01em}
+  .byline b{color:var(--ink);font-weight:600}
+  hr{border:0;border-top:1px solid var(--rule);margin:34px 0}
 
-  header{padding:74px 0 40px;border-bottom:1px solid var(--line);
-    background:radial-gradient(900px 380px at 82% -10%,rgba(232,35,63,.14),transparent 60%);}
-  .kicker{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--gold);border:1px solid var(--line);
-    padding:5px 11px;border-radius:999px;margin-bottom:20px}
-  header h1{font-size:clamp(33px,5.6vw,56px);font-weight:850}
-  header h1 .acc{color:var(--red)}
-  .lede{font-size:clamp(17px,2.2vw,20px);color:var(--mut);max-width:780px;margin:18px 0 0}
-  .thesis{margin:28px 0 0;padding:16px 20px;border-left:3px solid var(--gold);
-    background:var(--surface);border-radius:0 10px 10px 0;font-size:16.5px;color:#dfe4ee}
-  .meta-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
-  .tag{font-size:12.5px;color:var(--mut);background:var(--surface);border:1px solid var(--line);
-    padding:6px 12px;border-radius:999px}
+  .lead p:first-of-type::first-letter{
+    font-size:64px;line-height:.8;float:left;padding:6px 12px 0 0;color:var(--red);font-weight:600}
 
-  section{padding:56px 0;border-top:1px solid var(--line)}
-  .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
-  section h2{font-size:clamp(25px,3.5vw,36px);font-weight:830;margin:10px 0 10px}
-  section .sub{color:var(--mut);max-width:760px;margin:0 0 28px;font-size:16.5px}
-  p.body{color:#cdd4e2;max-width:760px;font-size:16px}
-  p.body b{color:var(--ink)}
+  .sec{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--faint);margin:54px 0 6px;padding-top:26px;border-top:1px solid var(--rule)}
+  h2{font-size:clamp(25px,3.6vw,32px);margin:0 0 20px}
 
-  /* reframe two-col */
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
-  @media(max-width:760px){.two{grid-template-columns:1fr}}
-  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
-  .panel .h{font-weight:760;font-size:15px;margin-bottom:6px}
-  .panel.no .h{color:#ff8a98} .panel.yes .h{color:var(--green)}
-  .panel p{margin:0;color:var(--mut);font-size:14.5px}
+  blockquote{margin:34px 0;padding:4px 0 4px 24px;border-left:3px solid var(--red);
+    font-size:clamp(22px,3vw,27px);line-height:1.36;font-style:italic;color:var(--ink)}
 
-  /* principles */
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-  @media(max-width:760px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;
-    transition:border-color .2s,transform .2s}
-  .card:hover{border-color:#34425e;transform:translateY(-2px)}
-  .card .ix{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .card .ix .num{font-size:12px;font-weight:800;color:var(--bg);background:var(--gold);
-    width:24px;height:24px;border-radius:7px;display:grid;place-items:center}
-  .card h3{font-size:17.5px;font-weight:780}
-  .card p{margin:8px 0 0;font-size:14.6px;color:var(--mut)}
-  .card .ev{margin-top:12px;font-size:13px;color:#cdd4e2;border-top:1px dashed var(--line);padding-top:11px}
-  .card .ev b{color:var(--gold);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:11.5px}
-  .card code{background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px;color:#e7c98a}
+  .plan p{margin:0 0 18px}
+  .plan .when{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-weight:700;font-size:14px;letter-spacing:.02em;color:var(--red);
+    display:inline-block;margin-right:6px;text-transform:uppercase}
+  ul.lede{list-style:none;padding:0;margin:0}
+  ul.lede li{margin:0 0 18px;padding-left:26px;position:relative}
+  ul.lede li::before{content:"—";position:absolute;left:0;color:var(--red);font-weight:700}
+  ul.lede b{font-weight:600}
 
-  /* pipeline */
-  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
-  .step{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:13.5px;font-weight:650}
-  .arr{color:var(--faint);font-weight:800}
-  .gate{border-color:var(--red);color:#ffd2d8}
-  .loopnote{margin-top:14px;color:var(--faint);font-size:13.5px}
+  figure{margin:38px 0}
+  .vid{max-width:330px;margin:0 auto;background:#000;border-radius:14px;overflow:hidden;
+    box-shadow:0 20px 50px rgba(40,30,15,.22)}
+  .vid video{width:100%;display:block;aspect-ratio:9/16;object-fit:cover;background:#000}
+  figcaption{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:13px;color:var(--faint);text-align:center;margin-top:12px;font-style:normal}
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ba figure{margin:0}
+  .ba img{width:100%;display:block;border-radius:10px;aspect-ratio:3/4;object-fit:cover;border:1px solid var(--rule)}
+  .ba .t{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:12.5px;margin-top:8px;color:var(--faint)}
+  .ba .t.no b{color:#9c2a2a} .ba .t.yes b{color:#2f7d4f}
 
-  /* roadmap */
-  .road{display:grid;grid-template-columns:1fr;gap:14px;margin-top:6px}
-  .phase{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;
-    display:grid;grid-template-columns:160px 1fr;gap:20px}
-  @media(max-width:680px){.phase{grid-template-columns:1fr;gap:8px}}
-  .phase .ph{font-weight:800;letter-spacing:-.01em}
-  .phase .ph .tagn{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
-  .phase .ph .st{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
-  .phase .ph .st.done{color:var(--green);border-color:rgba(67,209,139,.4)}
-  .phase .d{color:var(--mut);font-size:15px}
-  .phase .d b{color:var(--ink)}
+  .figrow{display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+  .figrow .vid{flex:0 0 300px}
+  .figrow .nums{flex:1;min-width:220px}
+  .nums dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .nums dt{font-weight:750;font-size:20px;color:var(--ink);text-align:right}
+  .nums dd{margin:0;font-size:14px;color:var(--soft);align-self:center}
+  @media(max-width:560px){.figrow{flex-direction:column}.figrow .vid{flex:0 0 auto;max-width:300px}}
 
-  /* proof */
-  .proofgrid{display:grid;grid-template-columns:.9fr 1.1fr;gap:30px;align-items:center}
-  @media(max-width:820px){.proofgrid{grid-template-columns:1fr}}
-  .videocard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
-  .videocard video{width:100%;border-radius:9px;display:block;background:#000;aspect-ratio:9/16;object-fit:cover}
-  .videocard .cap{font-size:12.5px;color:var(--faint);padding:9px 6px 3px}
-  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  .stat{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px}
-  .stat .n{font-size:25px;font-weight:850;letter-spacing:-.02em}
-  .stat .n.red{color:var(--red)} .stat .n.gold{color:var(--gold)} .stat .n.green{color:var(--green)}
-  .stat .l{font-size:12.5px;color:var(--mut);margin-top:3px}
-
-  .ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
-  @media(max-width:640px){.ba{grid-template-columns:1fr}}
-  .shot{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  .shot img{width:100%;display:block;aspect-ratio:3/4;object-fit:cover}
-  .shot .b{padding:11px 14px}
-  .shot .b .t{font-weight:750;font-size:14px}
-  .shot.bad .t{color:#ff8a98} .shot.good .t{color:var(--green)}
-  .shot .b p{margin:3px 0 0;font-size:12.5px;color:var(--mut)}
-
-  footer{padding:48px 0 70px;border-top:1px solid var(--line);color:var(--faint);font-size:13.5px}
-  footer b{color:var(--mut)}
+  footer{margin:30px 0 80px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:13px;color:var(--faint);line-height:1.6}
+  .sign{font-size:20px;color:var(--ink);margin:28px 0 0}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<nav><div class="wrap">
-  <div class="brand">the flow<b>.</b></div>
-  <div class="links">
-    <a href="#role">The role</a>
-    <a href="#approach">How I work</a>
-    <a href="#build">How I'd build it</a>
-    <a href="#longterm">Long-term</a>
-    <a href="#proof">Proof</a>
+  <header>
+    <div class="label">A note on the role · for Crossian</div>
+    <h1>How I'd run your video engine.</h1>
+    <p class="dek">What the job actually is, what I'd do in the first ninety days, and the longer game. I built a working version of it in an afternoon — the proof's at the bottom.</p>
+    <div class="byline"><b>Bach Hoang</b> &nbsp;·&nbsp; June 2026</div>
+  </header>
+
+  <hr>
+
+  <div class="body lead">
+    <p>Most people read “AI video” as a creative brief. I read it as an operations problem wearing a creative costume. The question that matters isn't <em>can we make a good video</em> — anyone with a decent eye and a model subscription can make one. It's: what does the second hundred cost, how long do they take, and do they still look like us? Fix that and video stops being a bottleneck and becomes a tap you turn on, one SKU at a time.</p>
+
+    <p>That's the part of Crossian I want. You're already wiring inventory to demand across departments. Video is the missing edge of that graph — the thing that turns a SKU that needs to move into attention. If the system already knows <em>what</em> needs to move, the same system should be able to commission the video that moves it: on brand, at a unit cost you can put in a spreadsheet. I'm not pitching to be the video person. I want to own that edge.</p>
+
+    <blockquote>Video stops being a bottleneck and becomes a tap you turn on, one SKU at a time.</blockquote>
   </div>
-</div></nav>
 
-<header><div class="wrap">
-  <span class="kicker">My operating thesis for the role</span>
-  <h1>I don't make videos.<br><span class="acc">I build the flow that makes them.</span></h1>
-  <p class="lede">How I'd approach and own an AI video function for a commerce business — the way I think about the brief, the principles I work by, how I'd architect the flow, and the long-term play. The two-hour build at the bottom is the <b>proof</b>, not the point.</p>
-  <div class="thesis">My one line for this job: you don't want someone who can make one good video — you want a <b>flow that makes the 400th product video as cheap and on-brand as the first</b>. Everything below is in service of that.</div>
-  <div class="meta-row">
-    <span class="tag">Product / process owner</span>
-    <span class="tag">Systems &amp; unit economics</span>
-    <span class="tag">Model-agnostic</span>
-    <span class="tag">Built, not theorised</span>
+  <div class="sec">The first ninety days</div>
+  <h2>What I'd actually do, if you hand me the keys</h2>
+  <div class="plan">
+    <p><span class="when">Week 1 ·</span> Baseline the truth. Stand the pipeline up as code — I already have a working version — and run one real SKU end to end while measuring the things nobody measures: cost per <em>usable</em> clip, yield (usable ÷ generated), and brief-to-export time. You can't manage what you're guessing at. On my own test the real cost came in at four times my first estimate. I'd rather find that on day one than in a board deck.</p>
+
+    <p><span class="when">By day 30 ·</span> A repeatable unit. One product line with a locked reference pack — a reusable identity/character anchor, the brand grade, a do-not-show list — so any SKU in that line is shot from a template, not from scratch. Plus a QA rubric anyone can apply, so quality isn't trapped in my head. The bar: a campaign for a new SKU shippable in under a day, by someone who isn't me.</p>
+
+    <p><span class="when">By day 60 ·</span> Plug into the loop. Wire the flow to your inventory and demand signals so the SKUs that need video get queued automatically — starting with deadstock and slow movers, where the upside is obvious and the creative bar is forgiving. Add a pre-publish gate (quality, brand, rights) and an engagement read <em>before</em> we spend a dollar on distribution.</p>
+
+    <p><span class="when">By day 90 ·</span> Prove the curve. A dashboard the rest of the company can read: cost-per-usable trending down, yield trending up, turnaround shrinking, and the first downstream numbers — watch-through, click-through, sell-through on the SKUs we filmed. The pitch to leadership isn't “look at these videos.” It's “here's the cost curve, and here's where it's headed.”</p>
   </div>
-</div></header>
 
-<section id="role"><div class="wrap">
-  <span class="eyebrow">How I think about the role</span>
-  <h2>It's a function to own, not a queue of clips</h2>
-  <p class="body">The instinct most people bring is “make good videos.” Mine is to ask: <b>what's the marginal cost and time of the next on-brand video, and how do I drive both toward zero while quality holds?</b> That reframes the job from a creative seat into an operations-and-product seat — which is what owning a workflow actually is.</p>
-  <p class="body" style="margin-top:14px">It also maps cleanly onto an AI-first, inventory-to-demand business. If the company already coordinates stock and demand across departments, then a flow that can turn <b>any SKU — including the stock you need to move — into on-brand video on demand</b> is the marketing arm of that same loop. I'm not interviewing to be “the video person.” I'm interviewing to own that arm.</p>
-  <div class="two" style="margin-top:26px">
-    <div class="panel no"><div class="h">✗ The asset mindset</div><p>Brief in, video out. Quality lives in one person's taste. Cost and turnaround are whatever they are. Doesn't survive a 400-SKU catalogue.</p></div>
-    <div class="panel yes"><div class="h">✓ The system mindset (mine)</div><p>A repeatable pipeline with measured unit economics. Taste is captured once and reused. Cost-per-usable and yield are tracked and improved every cycle. Scales to the whole catalogue.</p></div>
+  <div class="sec">The longer game</div>
+  <h2>Where it compounds into a moat</h2>
+  <div class="body">
+    <p>Past the first quarter, three things stack on top of each other.</p>
+    <p><b>The library becomes the moat.</b> Every prompt, reference pack, and shot template that works gets promoted into a shared library. The 400th video is cheaper and more on-brand than the first because it inherits everything that worked before it. That library, plus a cost curve a competitor can't match, <em>is</em> the defensible asset — and the reason this belongs in-house, not at an agency that rebuilds from zero every brief.</p>
+    <p><b>Build vs. buy, decided on purpose.</b> I'd rent the models and own the orchestration. Models change monthly; betting the function on any single one is a mistake, so I keep the flow model-agnostic and swap the best tool per shot. What we build is the part that accrues value to us — the libraries, the QA, the inventory hooks. Rent the commodity, own the compounding bit.</p>
+    <p><b>It becomes a team, not a hero.</b> The whole reason to write this down as a system is that it stops depending on me. Once it's running, a small team — or the marketing function you already have — operates the flow, and I'm tuning the economics and the loop, not hand-making clips. A function I can hand off is worth far more than a skill only I have.</p>
+    <blockquote>Rent the commodity. Own the compounding bit.</blockquote>
   </div>
-</div></section>
 
-<section id="approach"><div class="wrap">
-  <span class="eyebrow">How I work</span>
-  <h2>The principles I'd run the flow by</h2>
-  <p class="sub">These aren't theory — each one is something I either applied or learned the hard way during the two-hour build below.</p>
-  <div class="grid">
-
-    <div class="card">
-      <div class="ix"><span class="num">1</span><h3>Systems over assets</h3></div>
-      <p>I optimise the cost of the <em>next</em> video, not the polish of one. The repeatable pipeline — version-controlled, one-command — is the real deliverable; the clip is its output.</p>
-      <p class="ev"><b>In practice</b> · I shipped the flow as a repo (<code>pipeline.md</code>, <code>prompts.md</code>, logs, a <code>make-campaign</code> command) before I shipped a “final” video.</p>
-    </div>
-
-    <div class="card">
-      <div class="ix"><span class="num">2</span><h3>Measure before you spend</h3></div>
-      <p>I preflight cost and report <b>cost-per-usable and yield</b> — never vibes. Numbers are how a workflow earns trust and budget.</p>
-      <p class="ev"><b>In practice</b> · Measured real cost at <code>$2.10</code>/clip — my own first estimate was ~4× too low. I quote what I measured.</p>
-    </div>
-
-    <div class="card">
-      <div class="ix"><span class="num">3</span><h3>Taste at the UI, scale in code</h3></div>
-      <p>Dial the look by hand until it's locked, then codify it and batch. The first unit is artisanal; the Nth is automated. That's how quality scales without a person in every loop.</p>
-      <p class="ev"><b>In practice</b> · Locked one character + kit + grade, then reused them across every shot via references.</p>
-    </div>
-
-    <div class="card">
-      <div class="ix"><span class="num">4</span><h3>Consistency is an input problem</h3></div>
-      <p>Brand and identity consistency is won in the <b>reference pack</b> — a reusable anchor — not by re-prompting and hoping. One anchor serves the whole catalogue.</p>
-      <p class="ev"><b>In practice</b> · One original character held across a 4-shot story with zero drift.</p>
-    </div>
-
-    <div class="card">
-      <div class="ix"><span class="num">5</span><h3>One gate, one stop-loss</h3></div>
-      <p>Quality is decided at a single QA gate against a rubric; a re-roll cap protects margin. Discipline is what keeps an AI pipeline from quietly burning money.</p>
-      <p class="ev"><b>In practice</b> · 5-dimension rubric + a 3-re-roll cap; the final cut needed <b>zero</b> re-rolls.</p>
-    </div>
-
-    <div class="card">
-      <div class="ix"><span class="num">6</span><h3>Story sells; spectacle doesn't</h3></div>
-      <p>A pretty clip is dead on arrival. The job is the narrative and the voice — what makes a viewer feel something and share it. I'll kill my own output the moment it's just b-roll.</p>
-      <p class="ev"><b>In practice</b> · My first pass was handsome and hollow. I scrapped it and rebuilt it as a scripted, voiced story.</p>
-    </div>
-
-    <div class="card">
-      <div class="ix"><span class="num">7</span><h3>Own the guardrails</h3></div>
-      <p>Owning the pipeline means owning the risk: likeness rights, brand safety, and a human gate before anything goes live. I'd rather state the line than learn it in a lawsuit.</p>
-      <p class="ev"><b>In practice</b> · Declined to generate a real celebrity's likeness — even when asked — and kept publishing a human decision.</p>
-    </div>
-
-    <div class="card">
-      <div class="ix"><span class="num">8</span><h3>Trust nothing unmeasured</h3></div>
-      <p>Tools lie by omission. I verify what the platform tells me against ground truth before I plan a budget or a roadmap around it.</p>
-      <p class="ev"><b>In practice</b> · The billing API hid a pricing tier; I caught it against the real UI before committing spend.</p>
-    </div>
-
+  <div class="sec">How I work</div>
+  <h2>A few things I believe</h2>
+  <div class="body">
+    <p>All of these I either used or learned the hard way building the test below.</p>
+    <ul class="lede">
+      <li><b>Measure before you spend.</b> I preflight cost and quote cost-per-usable and yield — not adjectives.</li>
+      <li><b>Consistency is an input problem.</b> You win it in the reference pack, not by re-prompting and praying.</li>
+      <li><b>Story over spectacle.</b> My first cut was handsome and hollow b-roll. I scrapped it and rebuilt it with a script and a voiceover — a workflow owner has to be willing to kill their own output.</li>
+      <li><b>Own the guardrails.</b> I declined to generate a real person's likeness even when it would've been easier. Owning a pipeline means owning its risks, not just its outputs.</li>
+      <li><b>Trust nothing unmeasured.</b> The platform's own billing API hid a pricing tier from me; I caught it against the real UI before planning a budget around it.</li>
+    </ul>
   </div>
-</div></section>
 
-<section id="build"><div class="wrap">
-  <span class="eyebrow">How I'd build it</span>
-  <h2>One flow, eight stages, a loop that compounds</h2>
-  <p class="sub">A pipeline anyone on the team could re-run for the next SKU — “run a campaign for X” becomes a single command. UI for taste, code for scale.</p>
-  <div class="flow">
-    <span class="step">1 Brief</span><span class="arr">→</span>
-    <span class="step">2 Reference pack</span><span class="arr">→</span>
-    <span class="step">3 Shot list</span><span class="arr">→</span>
-    <span class="step">4 Generate</span><span class="arr">→</span>
-    <span class="step gate">5 QA gate</span><span class="arr">→</span>
-    <span class="step">6 Assemble</span><span class="arr">→</span>
-    <span class="step gate">7 Human publish</span><span class="arr">→</span>
-    <span class="step">8 Measure ↺</span>
+  <div class="sec">Proof</div>
+  <h2>I didn't want to send a memo about a system I hadn't built</h2>
+  <div class="body">
+    <p>So I built it — the pipeline, the economics, and a finished, voiced ad — in about two hours.</p>
   </div>
-  <p class="loopnote">The loop is the point: every winning prompt and reference pack is promoted into a template library, so each cycle is <b>cheaper and better</b> than the last. And because the platform aggregates many models, I treat models as <b>swappable inputs</b> behind the flow — the system survives model churn, it doesn't depend on any one of them.</p>
-</div></section>
-
-<section id="longterm"><div class="wrap">
-  <span class="eyebrow">Thinking long-term</span>
-  <h2>From one clip to a defensible function</h2>
-  <p class="sub">How I'd grow this from a proof into a moat — each phase compounding the last.</p>
-  <div class="road">
-    <div class="phase">
-      <div class="ph"><span class="tagn">Phase 1</span>Prove the unit<span class="st done">✓ done in 2 hrs</span></div>
-      <div class="d">One SKU → one hero, with <b>real unit economics</b>. Establish the pipeline, the QA rubric, and the cost/yield baseline. <em>(Done — see the proof below.)</em></div>
-    </div>
-    <div class="phase">
-      <div class="ph"><span class="tagn">Phase 2</span>Catalogue scale</div>
-      <div class="d">Reusable anchors per product line; batch campaigns from one command; a metrics layer tracking yield, $/usable and turnaround — then downstream watch-through and CTR. The flow now runs for <b>any SKU on demand</b>.</div>
-    </div>
-    <div class="phase">
-      <div class="ph"><span class="tagn">Phase 3</span>Close the inventory→demand loop</div>
-      <div class="d">The cross-departmental play: slow-movers and deadstock <b>auto-trigger</b> on-brand video; a virality signal gates spend before publish; performance feeds back into the template library. Marketing becomes a <b>function of inventory and demand signals</b>, not a separate silo.</div>
-    </div>
-    <div class="phase">
-      <div class="ph"><span class="tagn">Phase 4</span>The function as a moat</div>
-      <div class="d">A proprietary template + QA library and a <b>cost curve competitors can't match</b>. The org spins a campaign for any SKU, any channel, at a known cost-per-usable. That's the defensible asset — and the reason this is a function to own, not a task to outsource.</div>
-    </div>
-  </div>
-</div></section>
-
-<section id="proof"><div class="wrap">
-  <span class="eyebrow">Proof, not promises</span>
-  <h2>I built the whole thing in ~2 hours</h2>
-  <p class="sub">Same hands, same session: a working pipeline, real unit economics, and a finished voiced ad — including the judgment call to scrap my first attempt.</p>
-  <div class="proofgrid">
-    <div class="videocard">
-      <video controls playsinline preload="metadata" poster="media/hero.jpg">
-        <source src="media/story.mp4" type="video/mp4">
-      </video>
-      <div class="cap">“Wear It Like You Mean It” — 21s, 9:16, scripted &amp; voiced. ▶ sound on.</div>
-    </div>
-    <div>
-      <div class="stats">
-        <div class="stat"><div class="n green">100%</div><div class="l">yield — 4/4 shots usable first try</div></div>
-        <div class="stat"><div class="n gold">$2.10</div><div class="l">measured cost per clip</div></div>
-        <div class="stat"><div class="n">0</div><div class="l">re-rolls on the final cut</div></div>
-        <div class="stat"><div class="n">$8.40</div><div class="l">total media cost of the ad</div></div>
+  <figure>
+    <div class="figrow">
+      <div class="vid">
+        <video autoplay muted loop playsinline controls preload="auto" poster="media/hero.jpg">
+          <source src="media/story.mp4" type="video/mp4">
+        </video>
       </div>
-      <p class="body" style="margin-top:18px;font-size:15px">The number I'm proudest of isn't a number: I shipped a handsome first cut, judged it as <b>hollow b-roll</b>, and rebuilt it as a story with a voiceover. Owning a flow means grading your own work honestly — and the system made the rebuild cheap.</p>
+      <div class="nums">
+        <dl>
+          <dt>4/4</dt><dd>shots usable on the first try</dd>
+          <dt>$2.10</dt><dd>measured cost per clip</dd>
+          <dt>0</dt><dd>re-rolls on the final cut</dd>
+          <dt>$8.40</dt><dd>total compute for the whole ad</dd>
+        </dl>
+      </div>
     </div>
-  </div>
+    <figcaption>“Wear It Like You Mean It” — 21s, scripted &amp; voiced. ▶ tap to unmute for the voiceover. Original character; the real England kit used on purpose, as a fine-detail test.</figcaption>
+  </figure>
 
+  <div class="body">
+    <p>And the honest part, because that's how this work actually goes:</p>
+  </div>
   <div class="ba">
-    <div class="shot bad">
-      <img src="media/bg_before.jpg" alt="Before — stylised, reads fake">
-      <div class="b"><div class="t">✗ First instinct — “cinematic, dusk”</div><p>Looks AI. Low trust, low share-intent.</p></div>
-    </div>
-    <div class="shot good">
-      <img src="media/bg_after.jpg" alt="After — grounded, reads real">
-      <div class="b"><div class="t">✓ The fix — “documentary, real light”</div><p>Reads like a real shoot. Only the prompt changed.</p></div>
-    </div>
+    <figure>
+      <img src="media/bg_before.jpg" alt="Before — looks fake">
+      <div class="t no"><b>First attempt.</b> Reads obviously AI.</div>
+    </figure>
+    <figure>
+      <img src="media/bg_after.jpg" alt="After — looks real">
+      <div class="t yes"><b>The fix.</b> One prompt change — “cinematic” → “documentary, real light.”</div>
+    </figure>
   </div>
-  <p class="body" style="margin-top:20px;font-size:14.5px;color:var(--faint)">The flow itself — pipeline, prompt grammar, QA log, metrics, and the one-command campaign — is public here:
-    <a href="https://github.com/songbachhoang/ai-video-flow">github.com/songbachhoang/ai-video-flow</a>.</p>
-</div></section>
+  <div class="body" style="margin-top:24px">
+    <p>The whole flow — pipeline, prompt grammar, QA log, the one-command campaign — is on GitHub: <a href="https://github.com/songbachhoang/ai-video-flow">github.com/songbachhoang/ai-video-flow</a>.</p>
+  </div>
 
-<footer><div class="wrap">
-  <p><b>My take on the role.</b> Built in ~2 hours, end to end — the system, the economics, and the film. Tooling: Claude Code + a model-aggregator (Seedance 2.0) + ffmpeg.</p>
-  <p>Original synthetic character (no real-person likeness). A real team kit appears for a model-capability test only. This is a personal positioning piece for a role, not a commercial endorsement.</p>
-</div></footer>
+  <div class="sec">One ask back</div>
+  <div class="body">
+    <p>Before I promise you numbers, I'd want to see how your inventory and demand signals are actually structured, and which SKUs hurt most when they sit. The video flow is the easy half. The valuable half is wiring it to the decisions you're already making every day. That's the job I want — and I've already started.</p>
+    <p class="sign">— Bach</p>
+  </div>
 
+  <footer>
+    <hr>
+    <p>Built in ~2 hours, end to end. Original synthetic character — no real-person likeness. A real team kit appears solely for a model-capability test. A personal positioning piece for a role, not a commercial endorsement.</p>
+  </footer>
+
+</div>
 </body>
 </html>
