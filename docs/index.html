@@ -75,6 +75,21 @@
   .nums dd{margin:0;font-size:14px;color:var(--soft);align-self:center}
   @media(max-width:560px){.figrow{flex-direction:column}.figrow .vid{flex:0 0 auto;max-width:300px}}
 
+  .flowmap{display:flex;gap:10px;align-items:stretch;margin:6px 0 4px}
+  .flowmap .zone{border-radius:12px;padding:13px 13px 11px;border:1px solid var(--rule)}
+  .zone.before{flex:1.15;background:#f4efe4}
+  .zone.mid{flex:.72;background:#f7e9e6;border-color:#e8d0c9}
+  .zone.after{flex:1.4;background:#edf2ec}
+  .zh{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:750;font-size:13.5px;color:var(--ink);line-height:1.2;margin-bottom:10px}
+  .zh span{display:block;font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+  .chip{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:7px 9px;font-size:13px;color:var(--ink);margin-bottom:7px;line-height:1.25}
+  .chip:last-child{margin-bottom:0}
+  .chip small{display:block;color:var(--faint);font-size:10.5px;margin-top:1px}
+  .ar{align-self:center;color:var(--faint);font-weight:700;font-size:17px}
+  .loopbar{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin-top:11px;background:#fffdf8;border:1px dashed var(--rule);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--soft)}
+  .dgcap{font-size:15.5px;color:var(--soft);font-style:italic;margin-top:18px}
+  @media(max-width:640px){.flowmap{flex-direction:column}.ar{transform:rotate(90deg);align-self:center;margin:2px 0}}
+
   footer{margin:30px 0 80px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     font-size:13px;color:var(--faint);line-height:1.6}
   .sign{font-size:20px;color:var(--ink);margin:28px 0 0}
@@ -95,10 +110,38 @@
   <div class="body lead">
     <p>Most people read “AI video” as a creative brief. I read it as an operations problem wearing a creative costume. The question that matters isn't <em>can we make a good video</em> — anyone with a decent eye and a model subscription can make one. It's: what does the second hundred cost, how long do they take, and do they still look like us? Fix that and video stops being a bottleneck and becomes a tap you turn on, one SKU at a time.</p>
 
-    <p>That's the part of Crossian I want. You're already wiring inventory to demand across departments. Video is the missing edge of that graph — the thing that turns a SKU that needs to move into attention. If the system already knows <em>what</em> needs to move, the same system should be able to commission the video that moves it: on brand, at a unit cost you can put in a spreadsheet. I'm not pitching to be the video person. I want to own that edge.</p>
+    <p>Crossian is interesting to me for a specific reason: you're already wiring inventory to demand across departments. Video is one missing edge of that graph — if the system knows a SKU needs to move, the same system should be able to commission the video that moves it, on brand, at a unit cost you can put in a spreadsheet. So that's where I'd start.</p>
+
+    <p>But let me be clear about what I'm offering, because it isn't a pair of hands for video. It's a way of working: take an expensive, manual, judgment-heavy function, turn it into a measured AI system, and make it run <em>without me</em>. Video is the first place I'd prove it — a clean, measurable bottleneck. It won't be the last.</p>
 
     <blockquote>Video stops being a bottleneck and becomes a tap you turn on, one SKU at a time.</blockquote>
   </div>
+
+  <div class="sec">How the flow works</div>
+  <h2>The video is the small part</h2>
+  <div class="flowmap">
+    <div class="zone before">
+      <div class="zh">Before the video<span>where the value is</span></div>
+      <div class="chip">Inventory + demand signal<small>which SKU needs to move</small></div>
+      <div class="chip">Brief<small>objective · channel · do-not-show</small></div>
+      <div class="chip">Reference pack<small>reusable anchor · brand grade</small></div>
+    </div>
+    <span class="ar">→</span>
+    <div class="zone mid">
+      <div class="zh">The video<span>the commodity</span></div>
+      <div class="chip">Generate the shots<small>any model — swappable</small></div>
+    </div>
+    <span class="ar">→</span>
+    <div class="zone after">
+      <div class="zh">After the video<span>where value is captured</span></div>
+      <div class="chip">QA gate<small>one rubric, anyone can apply</small></div>
+      <div class="chip">Assemble<small>cut · voice · music</small></div>
+      <div class="chip">Human publish<small>brand + rights gate</small></div>
+      <div class="chip">Measure<small>watch-through → sell-through</small></div>
+    </div>
+  </div>
+  <div class="loopbar">↻ Every result feeds a template library — so the next SKU is cheaper and more on-brand than the last.</div>
+  <p class="dgcap">The generation in the middle is the commodity; it's getting cheaper for everyone. The work that compounds — and the skill that transfers to <em>any</em> function — is everything before and after it.</p>
 
   <div class="sec">The first ninety days</div>
   <h2>What I'd actually do, if you hand me the keys</h2>
@@ -118,7 +161,7 @@
     <p>Past the first quarter, three things stack on top of each other.</p>
     <p><b>The library becomes the moat.</b> Every prompt, reference pack, and shot template that works gets promoted into a shared library. The 400th video is cheaper and more on-brand than the first because it inherits everything that worked before it. That library, plus a cost curve a competitor can't match, <em>is</em> the defensible asset — and the reason this belongs in-house, not at an agency that rebuilds from zero every brief.</p>
     <p><b>Build vs. buy, decided on purpose.</b> I'd rent the models and own the orchestration. Models change monthly; betting the function on any single one is a mistake, so I keep the flow model-agnostic and swap the best tool per shot. What we build is the part that accrues value to us — the libraries, the QA, the inventory hooks. Rent the commodity, own the compounding bit.</p>
-    <p><b>It becomes a team, not a hero.</b> The whole reason to write this down as a system is that it stops depending on me. Once it's running, a small team — or the marketing function you already have — operates the flow, and I'm tuning the economics and the loop, not hand-making clips. A function I can hand off is worth far more than a skill only I have.</p>
+    <p><b>It becomes a team, not a hero — and that frees me to move.</b> The whole reason to write this down as a system is that it stops depending on me. Once the flow runs without me, the company has a durable asset and I'm free to point the same playbook at the next expensive, manual function. That's the arc I'm actually after: deliver this, make it self-running, then go do it again somewhere it matters more. I'm not here to be the video person for five years — I'm here to be the person who turns the org's bottlenecks into AI systems, one after another.</p>
     <blockquote>Rent the commodity. Own the compounding bit.</blockquote>
   </div>
 
@@ -178,7 +221,7 @@
 
   <div class="sec">One ask back</div>
   <div class="body">
-    <p>Before I promise you numbers, I'd want to see how your inventory and demand signals are actually structured, and which SKUs hurt most when they sit. The video flow is the easy half. The valuable half is wiring it to the decisions you're already making every day. That's the job I want — and I've already started.</p>
+    <p>Before I promise you numbers, I'd want to see how your inventory and demand signals are actually structured, and which SKUs hurt most when they sit. The video flow is the easy half. The valuable half is wiring it to the decisions you're already making every day. That's the work I want to do here — starting with video, and not stopping there. I've already begun.</p>
     <p class="sign">— Bach</p>
   </div>
 
